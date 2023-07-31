@@ -1,8 +1,13 @@
 const router = require("express").Router();
 
-const {sendMail} = require("../controllers/MessageController")
+const {
+  sendMail,
+  getAll,
+  deleteMessage,
+} = require("../controllers/MessageController");
 
+router.post("/", sendMail);
+router.get("/", getAll);
+router.delete("/:id", deleteMessage);
 
-router.post("/",sendMail)
-
-module.exports = router
+module.exports = router;

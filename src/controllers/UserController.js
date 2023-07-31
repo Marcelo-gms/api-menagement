@@ -77,7 +77,7 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  let user = await User.findOne({ email });
 
   if (!user) {
     res
@@ -103,4 +103,47 @@ const login = async (req, res) => {
   });
 };
 
-module.exports = { register, login };
+const update = async (req, res) => {
+  const { name, email, password, confirmPassword } = req.body;
+
+  const user = req.user;
+
+  const imageProfile = req.file;
+
+  if (imageProfile) {
+    user.imageProfile = imageProfile.filename;
+  }
+
+  if (name) {
+    if (name.length < 3) {
+      res
+        .status(422)
+        .json({ err: "O nome precisa ter no minímo 3 caracteres!" });
+      return;
+    } else {
+      user.name = name;
+    }
+  }
+
+  if (password) {
+    if (password.length <= 5) {
+      res
+        .status(422)
+        .json({ err: "A senha precisa ter no minímo 6 caracteres!" });
+      return;
+    }
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    user.password = passwordHash;
+  }
+
+  await user.save();
+
+  res.status(422).json({
+    msg: "Usuário atualizado com sucesso!",
+    user: { name, email },
+  });
+};
+
+module.exports = { register, login, update };

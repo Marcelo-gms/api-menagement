@@ -1,8 +1,16 @@
 const router = require("express").Router();
 
-const { save } = require("../controllers/ProjectController");
+const {
+  create,
+  getAll,
+  update,
+  deleteProject,
+} = require("../controllers/ProjectController");
 const imageUpload = require("../middlewares/imageUpload");
 
-router.post("/", imageUpload.single("image"), save);
+router.get("/", getAll);
+router.post("/create", imageUpload.single("projectImage"), create);
+router.put("/update/:id", imageUpload.single("projectImage"), update);
+router.delete("/delete/:id", deleteProject);
 
 module.exports = router;
