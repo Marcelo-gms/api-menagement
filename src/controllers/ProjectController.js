@@ -5,19 +5,19 @@ const create = async (req, res) => {
   const projectImage = req.file;
 
   if (!name) {
-    return res.status(422).json({ err: "O nome é obrigatório." });
+    return res.status(400).json({ err: "O nome é obrigatório." });
   }
 
   if (!description) {
-    return res.status(422).json({ err: "A descrição é obrigatória." });
+    return res.status(400).json({ err: "A descrição é obrigatória." });
   }
   if (!stack) {
     return res
-      .status(422)
-      .json({ err: "As tecnologias usadas é obrigatórias." });
+      .status(400)
+      .json({ err: "As tecnologias usadas são obrigatórias." });
   }
   if (!projectImage) {
-    return res.status(422).json({ err: "A imagem é obrigatória." });
+    return res.status(400).json({ err: "A imagem é obrigatória." });
   }
 
   const stackModified = stack.split(",");
@@ -26,7 +26,7 @@ const create = async (req, res) => {
     name,
     description,
     stack: [...stackModified],
-    projectImage: projectImage?.filename,
+    projectImage: `https://menage.onrender.com/uploads/imageProject/${projectImage?.filename}`,
   };
 
   await Project.create(project);
@@ -37,7 +37,19 @@ const create = async (req, res) => {
 const getAll = async (req, res) => {
   const projects = await Project.find({});
 
-  res.status(200).json({ projects });
+  res.status(200).json(projects);
+};
+const getById = async (req, res) => {
+  const { id } = req.params;
+
+  const project = await Project.findById({ _id: id });
+
+  if (!project) {
+    res.status(404).json({ err: "Projeto não encontrado." });
+    return;
+  }
+
+  res.status(200).json(project);
 };
 
 const update = async (req, res) => {
@@ -79,6 +91,7 @@ const deleteProject = async (req, res) => {
 module.exports = {
   create,
   getAll,
+  getById,
   update,
   deleteProject,
 };

@@ -5,18 +5,16 @@ const send = require("../utils/sendMail");
 const sendMail = async (req, res) => {
   const { name, email, message } = req.body;
 
-  const sendError = [];
-
   if (!name) {
-    res.status(422).json({ sendError: "O Nome é obrigatório!" });
+    res.status(422).json({ err: "O Nome é obrigatório!" });
     return;
   }
   if (!email) {
-    res.status(422).json({ sendError: "O e-mail é obrigatório!" });
+    res.status(422).json({ err: "O e-mail é obrigatório!" });
     return;
   }
   if (!message) {
-    res.status(422).json({ sendError: "A mesangem é obrigatória!" });
+    res.status(422).json({ err: "A mesangem é obrigatória!" });
     return;
   }
 

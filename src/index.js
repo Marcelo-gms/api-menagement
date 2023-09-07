@@ -28,9 +28,8 @@ const usersRouter = require("./routes/user.routes");
 app.use("/message", messageRouter);
 app.use("/project", projectRouter);
 app.use("/users", usersRouter);
-
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Salve porra!" });
+app.use("*", (req, res) => {
+  res.status(404).send("Rota não encontrada!");
 });
 
 db().then(() => {

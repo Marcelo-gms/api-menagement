@@ -10,47 +10,47 @@ const register = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (user) {
-    res.status(422).json({ err: "Usuário já cadastrado no sistema!" });
+    res.status(400).json({ err: "Usuário já cadastrado no sistema!" });
     return;
   }
 
   if (name) {
     if (name.length < 3) {
       res
-        .status(422)
+        .status(400)
         .json({ err: "O nome precisa ter no minímo 3 caracteres!" });
       return;
     }
   } else {
-    res.status(422).json({ err: "O nome é obrigatório!" });
+    res.status(400).json({ err: "O nome é obrigatório!" });
     return;
   }
 
   if (email) {
     const regex = /\S+@\S+\.\S+/;
     if (!regex.test(email)) {
-      res.status(422).json({ err: "E-mail invalido!" });
+      res.status(400).json({ err: "E-mail invalido!" });
       return;
     }
   } else {
-    res.status(422).json({ err: "O e-mail é obrigatório!" });
+    res.status(400).json({ err: "O e-mail é obrigatório!" });
     return;
   }
   if (password) {
     if (password.length <= 5) {
       res
-        .status(422)
+        .status(400)
         .json({ err: "A senha precisa ter no minímo 6 caracteres!" });
       return;
     }
     if (password != confirmPassword) {
       res
-        .status(422)
+        .status(400)
         .json({ err: "A senha e a confirmação de senha precisam ser iguais!" });
       return;
     }
   } else {
-    res.status(422).json({ err: "A senha é obrigatória!" });
+    res.status(400).json({ err: "A senha é obrigatória!" });
     return;
   }
 
@@ -67,12 +67,18 @@ const register = async (req, res) => {
 
   const token = await createToken(userCreated.email, userCreated._id);
 
-  res.status(422).json({
-    msg: "Usuário registrado com sucesso!",
-    user: { name, email },
+  res.status(201).json({
+    name,
+    email,
     token,
   });
 };
+
+const getAll = async (req, res)=>{
+  const users = await User.find({}).select("-password");
+
+  res.status(200).json(users)
+}
 
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -81,30 +87,29 @@ const login = async (req, res) => {
 
   if (!user) {
     res
-      .status(422)
+      .status(400)
       .json({ err: "Usuário não cadastrado ou o e-mail é inválido!" });
     return;
   }
 
   const passwordIsValid = await bcrypt.compare(password, user.password);
 
-  console.log(passwordIsValid);
-
   if (!passwordIsValid) {
-    res.status(422).json({ err: "A senha está incorreta!" });
+    res.status(400).json({ err: "A senha está incorreta!" });
     return;
   }
 
   const token = await createToken(user.email, user._id);
 
-  res.status(422).json({
-    msg: "Login feito com sucesso! Bem-Vindo.",
-    user: { name: user.name, email: user.email, token },
+  res.status(200).json({
+    name: user.name,
+    email: user.email,
+    token,
   });
 };
 
 const update = async (req, res) => {
-  const { name, email, password, confirmPassword } = req.body;
+  const { name, email, password } = req.body;
 
   const user = req.user;
 
@@ -117,7 +122,7 @@ const update = async (req, res) => {
   if (name) {
     if (name.length < 3) {
       res
-        .status(422)
+        .status(400)
         .json({ err: "O nome precisa ter no minímo 3 caracteres!" });
       return;
     } else {
@@ -128,7 +133,7 @@ const update = async (req, res) => {
   if (password) {
     if (password.length <= 5) {
       res
-        .status(422)
+        .status(400)
         .json({ err: "A senha precisa ter no minímo 6 caracteres!" });
       return;
     }
@@ -140,10 +145,7 @@ const update = async (req, res) => {
 
   await user.save();
 
-  res.status(422).json({
-    msg: "Usuário atualizado com sucesso!",
-    user: { name, email },
-  });
+  res.status(200).json({msg:"Atualizado com sucesso!"});
 };
 
-module.exports = { register, login, update };
+module.exports = { register,getAll, login, update };
