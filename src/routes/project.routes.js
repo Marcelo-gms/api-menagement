@@ -5,12 +5,14 @@ const {
   getAll,
   update,
   deleteProject,
+  getById,
 } = require("../controllers/ProjectController");
 const imageUpload = require("../middlewares/imageUpload");
 
 router.get("/", getAll);
-router.post("/create", imageUpload.single("projectImage"), create);
-router.put("/update/:id", imageUpload.single("projectImage"), update);
-router.delete("/delete/:id", deleteProject);
-
+router.get("/:id", getById);
+router.post("/", imageUpload.single("projectImage"), create);
+router.put("/:id", imageUpload.single("projectImage"), update);
+router.delete("/:id", deleteProject);
+ 
 module.exports = router;
