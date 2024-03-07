@@ -12,7 +12,7 @@ const db = require("./config/db");
 app.use(
   cors({
     origin: [
-      "https://marcelogomes.netlify.app",
+      "https://mgdev.netlify.app",
       "https://front-cms-portfolio.netlify.app",
     ],
   })
